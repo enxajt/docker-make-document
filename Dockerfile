@@ -36,9 +36,6 @@ ENV USER enxajt
 RUN useradd -m -g sudo $USER
 USER $USER
 WORKDIR /home/$USER
-
-EXPOSE 8000 35729
-
 RUN git clone https://github.com/enxajt/npm-impress.git
 WORKDIR /home/$USER/npm-impress
 RUN npm install 
@@ -49,4 +46,11 @@ RUN cd /home/$USER/ \
   && curl -L https://github.com/astefanutti/decktape/releases/download/v1.0.0/phantomjs-linux-x86-64 -o phantomjs \
   && chmod +x phantomjs
 
+RUN cd /home/$USER/ \
+  && git clone https://github.com/enxajt/docker-sphinx.git
+ADD plantuml.jar /home/$USER/docker-sphinx
+RUN cd /home/$USER/docker-sphinx \
+  && docker build . -t sphinx
+
+EXPOSE 8000 35729
 CMD ["/bin/bash"]
