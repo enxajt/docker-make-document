@@ -46,11 +46,33 @@ RUN cd /home/$USER/ \
   && curl -L https://github.com/astefanutti/decktape/releases/download/v1.0.0/phantomjs-linux-x86-64 -o phantomjs \
   && chmod +x phantomjs
 
-RUN cd /home/$USER/ \
-  && git clone https://github.com/enxajt/docker-sphinx.git
-ADD plantuml.jar /home/$USER/docker-sphinx
-RUN cd /home/$USER/docker-sphinx \
-  && docker build . -t sphinx
+COPY .ssh /.ssh
+COPY git.sh /git.sh
+RUN /git.sh
 
-EXPOSE 8000 35729
+#RUN cd /home/$USER/ \
+#  && git clone https://github.com/enxajt/docker-sphinx.git
+#ADD plantuml.jar /home/$USER/docker-sphinx/
+#RUN cd /home/$USER/docker-sphinx \
+#  && docker build . -t sphinx
+
+# nodejs npm
+RUN set -x apt-get update && apt-get install -y \
+  build-essential \
+  nodejs \
+  npm \
+ && npm cache clean \
+ && npm install n -g \
+ && n stable \
+ && ln -sf /usr/local/bin/node /usr/bin/node
+RUN apt-get -y purge nodejs npm \
+ && npm update \
+ && npm install --global gulp gulp-cli
+
+RUN git clone https://github.com/enxajt/gulp-plantuml.git /plantuml
+WORKDIR /plantuml
+RUN npm init -y \
+ && npm install --save-dev gulp path gulp-plantuml gulp-webserver gulp-print gulp-cached gulp-exec gulp-ejs gulp-rename gulp-plumber gulp-json-transform gulp-tap
+
+EXPOSE 8000
 CMD ["/bin/bash"]
