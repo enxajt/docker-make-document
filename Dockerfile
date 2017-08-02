@@ -41,7 +41,8 @@ RUN /git.sh
 RUN git clone https://github.com/enxajt/npm-impress.git
 WORKDIR /npm-impress
 RUN npm init -y \
- && npm install --save-dev ejs watch chokidar-cli ejs exec glob marked
+ && npm install --save-dev ejs watch chokidar-cli ejs exec glob marked 
+RUN npm install --save-dev markdown-it
 
 EXPOSE 8000
 CMD ["/bin/bash"]
